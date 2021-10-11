@@ -1,0 +1,30 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "C/C++: gcc сборка активного файла",
+			"command": "/usr/bin/gcc",
+			"args": [
+				"-g",
+				"${workspaceRoot}/src/*.c",
+				"${workspaceRoot}/src/*.h",
+				"-o",
+				"${workspaceRoot}/build/main",
+				"-l",
+				"ncurses"
+			],
+			"options": {
+				"cwd": "${workspaceRoot}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "компилятор: /usr/bin/gcc"
+		}
+	]
+}
