@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     
 
     // creating the world
-    struct World* world = initWorld(1024, 128);
+    struct World* world = initWorld(1024, 1024);
 
     wclear(stdscr);
 
@@ -45,29 +45,25 @@ int main(int argc, char *argv[]) {
     long long lastPhysicsUpdate = 0;
     
     while (running) {
+        long long frameStart = current_timestamp();
         
         // inputs
         int ch;
         while ((ch = getch()) != ERR) {
             if (ch == 'q' || ch == 'Q') running = false;
-            else if (ch == 'w') {
-                if (getBlock(world, player_x, player_y+10).canStepOn) player_y += 10;
+            else if (ch == 'w' || ch == 'W') {
+                if (getBlock(world, player_x, player_y+1).canStepOn) player_y++;
             }
-            else if (ch == 'a') {
+            else if (ch == 'a' || ch == 'A') {
                 if (getBlock(world, player_x-1, player_y).canStepOn) player_x--;
-                else if (getBlock(world, player_x-1, player_y+1).canStepOn) {
-                    player_x--; player_y++;
-                }
             }
-            else if (ch == 's') {
-
+            else if (ch == 's' || ch == 'S') {
+                if (getBlock(world, player_x, player_y-1).canStepOn) player_y--;
             }
-            else if (ch == 'd') {
+            else if (ch == 'd' || ch == 'D') {
                 if (getBlock(world, player_x+1, player_y).canStepOn) player_x++;
-                else if (getBlock(world, player_x+1, player_y+1).canStepOn) {
-                    player_x++; player_y++;
-                }
             }
+
 
             else if (ch == 'j') { // place block on the left
                 if (getBlock(world, player_x-1, player_y).canStepOn) setBlock(world, player_x-1, player_y, initBlockById(ore));
@@ -81,6 +77,20 @@ int main(int argc, char *argv[]) {
             }
             else if (ch == 'L') { // break block on the right
                 setBlock(world, player_x+1, player_y, initBlockById(air));
+            }
+
+            else if (ch == 'i') { // place block on top
+                if (getBlock(world, player_x, player_y+1).canStepOn) setBlock(world, player_x, player_y+1, initBlockById(ore));
+            }
+            else if (ch == 'I') { // break block on top
+                setBlock(world, player_x, player_y+1, initBlockById(air));
+            }
+
+            else if (ch == 'k') { // place block on bottom
+                if (getBlock(world, player_x, player_y-1).canStepOn) setBlock(world, player_x, player_y-1, initBlockById(ore));
+            }
+            else if (ch == 'K') { // break block on bottom
+                setBlock(world, player_x, player_y-1, initBlockById(air));
             }
 
             else if (ch == 't') generateTail = !generateTail;
@@ -101,28 +111,22 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        // player physics
-        if (current_timestamp() - lastPhysicsUpdate >= 33) {
-            if (getBlock(world, player_x, player_y-1).canStepOn) {
-                player_y--;
-            }
-
-            lastPhysicsUpdate = current_timestamp();
-        }
-
         if (generateTail) {
             struct Block playerTail = {.id=custom, .sybmol='$', .color_pair=getColor(COLOR_YELLOW, COLOR_BLACK), .bold=false, .dim=false, .canStepOn=true};
             setBlock(world, player_x, player_y, playerTail);
         }
 
-        if ((getmaxx(stdscr)/2) % 2 == 1) {
-            renderBlock(stdscr, player, getmaxx(stdscr)/2, getmaxy(stdscr)/2);
-        }
-        else {
-            renderBlock(stdscr, player, getmaxx(stdscr)/2, getmaxy(stdscr)/2 + 1);
-        }
+        renderBlock(stdscr, player, getmaxx(stdscr)/2, getmaxy(stdscr)/2 + getmaxy(stdscr)%2);
 
         refresh();
+
+        long long frameEnd = current_timestamp();
+        /*
+        long long toSleep = 16666 - (frameEnd - frameStart);
+        if (toSleep > 0) {
+            usleep(toSleep);
+        }
+        */
     }
 
     getch();

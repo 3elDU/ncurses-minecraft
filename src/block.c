@@ -10,7 +10,7 @@ struct Block initBlockById(enum BLOCK_ID id) {
             return (struct Block) {bedrock, '#', getColor(COLOR_WHITE, COLOR_BLACK), false, true, false};
 
         case stone:
-            return (struct Block) {stone, '%', getColor(COLOR_WHITE, COLOR_BLACK), false, true, false};
+            return (struct Block) {stone, '0', getColor(COLOR_WHITE, COLOR_BLACK), false, false, false};
 
         case ore:
             return (struct Block) {ore, '$', getColor(COLOR_YELLOW, COLOR_BLACK), true, false, false};
@@ -19,10 +19,13 @@ struct Block initBlockById(enum BLOCK_ID id) {
             return (struct Block) {dirt, '#', getColor(COLOR_YELLOW, COLOR_BLACK), false, true, false};
 
         case grass:
-            return (struct Block) {grass, '_', getColor(COLOR_GREEN, COLOR_BLACK), false, false, true};
+            return (struct Block) {grass, '.', getColor(COLOR_GREEN, COLOR_BLACK), false, false, true};
+
+        case flower:
+            return (struct Block) {flower, '.', getColor(COLOR_YELLOW, COLOR_BLACK), false, false, true};
 
         default:
-            return (struct Block) {custom, '#', getColor(COLOR_RED, COLOR_BLACK), true, true, false};
+            return (struct Block) {custom, '#', getColor(COLOR_RED, COLOR_BLACK), false, true, false};
     }
 }
 

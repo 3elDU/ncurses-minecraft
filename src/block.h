@@ -11,7 +11,9 @@ enum BLOCK_ID {
     ore,
     dirt,
     grass,
-    custom
+    flower,
+
+    custom,
 };
 
 struct Block {

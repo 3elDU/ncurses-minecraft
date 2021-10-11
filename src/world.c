@@ -27,32 +27,30 @@ struct World* initWorld(unsigned size_x, unsigned size_y) {
     result->size_y = size_y;
 
     result->world = (struct Block*)malloc(size_x * size_y * sizeof(struct Block));
-    memset(result->world, 0, size_x * size_y * sizeof(struct Block));
     generateWorld(result);
 
     return result;
 }
 
 void generateWorld(struct World* world) {
-    int cur_y = 20;
-    
-    for (int x = 0; x < world->size_x; x++) {
-        for (int y = world->size_y-1; y >= 0; y--) {
-            
-            struct Block cur_block;
+    for (unsigned x = 0; x < world->size_x; x++) {
+        for (unsigned y = 0; y < world->size_y; y++) {
 
-            if (y <= cur_y) {
-                if (y == cur_y) cur_block = initBlockById(grass);
-                else if (cur_y - y <= 3) cur_block = initBlockById(dirt);
-                else if ( randomRange(0, 5) == 5 ) cur_block = initBlockById(ore);
-                else if (y > 0) cur_block = initBlockById(stone);
-                else if (y == 0) cur_block = initBlockById(bedrock);
+            unsigned choice = randomRange(0, 15);
+            struct Block block = initBlockById(air);
+
+            if (choice <= 3) {
+                block = initBlockById(grass);
             }
-            else cur_block = initBlockById(air);
+            else if (choice == 4) {
+                block = initBlockById(flower);
+            }
+            else if (choice == 5) {
+                block = initBlockById(stone);
+            }
 
-            setBlock(world, x, y, cur_block);
+            setBlock(world, x, y, block);
+
         }
-
-        if (x % 2 == 0) cur_y += randomRange(-1, 1);
     }
 }
