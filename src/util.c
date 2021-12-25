@@ -2,8 +2,8 @@
 #include <sys/time.h>
 #include "util.h"
 
-int randomRange(int from, int to) {
-    return (rand() % (to-from+1)) + from;
+int randomRange(const int from, const int to) {
+    return from+rand()%(to+1-from);
 }
 
 long long current_timestamp() {

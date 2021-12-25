@@ -6,13 +6,13 @@
 			"label": "C/C++: gcc сборка активного файла",
 			"command": "/usr/bin/gcc",
 			"args": [
-				"-g",
+				"-pipe",
 				"${workspaceRoot}/src/*.c",
 				"${workspaceRoot}/src/*.h",
 				"-o",
 				"${workspaceRoot}/build/main",
-				"-l",
-				"ncurses"
+				"-lncurses",
+				"-ltinfo"
 			],
 			"options": {
 				"cwd": "${workspaceRoot}"

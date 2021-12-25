@@ -12,6 +12,7 @@ enum BLOCK_ID {
     dirt,
     grass,
     flower,
+    water,
 
     custom,
 };
@@ -25,6 +26,8 @@ struct Block {
     bool dim;
     
     bool canStepOn;
+
+    int animationState;
 };
 
 struct Block initBlockById(enum BLOCK_ID);

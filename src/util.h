@@ -5,8 +5,7 @@
 #define false 0
 #define byte unsigned char
 
-int randomRange(int from, int to);
-
+int randomRange(const int from, const int to);
 long long current_timestamp();
 
 #endif

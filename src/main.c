@@ -8,13 +8,21 @@
 #include "colors.h"
 #include "block.h"
 #include "util.h"
+#include "player.h"
+#include "log.h"
 
 int main(int argc, char *argv[]) {
+    // creating the logger object
+    struct LogObject* log = createLog(13, "game_log.log");
+
+    logPrintln(log, "hello, world!");
+    logPrintln(log, "this is test!");
+
     srand((unsigned)time(0));
     initscr();
 
     // exiting if terminal isn't supporting colors
-    if (has_colors() == FALSE) {
+    if (!has_colors()) {
         endwin();
         puts("Terminal doesn't support colors!");
         return 1;
@@ -38,12 +46,13 @@ int main(int argc, char *argv[]) {
 
     bool running = true;
 
-    int player_x = 0, player_y = 25;
+    int player_x = 0, player_y = 120;
     struct Block player = {.id=custom, .sybmol='Y', .color_pair=getColor(COLOR_BLUE, COLOR_BLACK), .bold=true, .dim=false};
     bool generateTail = false;
     
     long long lastPhysicsUpdate = 0;
     
+    clear();
     while (running) {
         long long frameStart = current_timestamp();
         
@@ -51,17 +60,32 @@ int main(int argc, char *argv[]) {
         int ch;
         while ((ch = getch()) != ERR) {
             if (ch == 'q' || ch == 'Q') running = false;
+            /*
             else if (ch == 'w' || ch == 'W') {
                 if (getBlock(world, player_x, player_y+1).canStepOn) player_y++;
             }
+            */
+
+            else if (ch == 'c' || ch == 'C') { // Generate new world
+
+            }
+
             else if (ch == 'a' || ch == 'A') {
                 if (getBlock(world, player_x-1, player_y).canStepOn) player_x--;
+                else if (getBlock(world, player_x-1, player_y+1).canStepOn) {
+                    player_x--;
+                    player_y++;
+                }
             }
             else if (ch == 's' || ch == 'S') {
                 if (getBlock(world, player_x, player_y-1).canStepOn) player_y--;
             }
             else if (ch == 'd' || ch == 'D') {
                 if (getBlock(world, player_x+1, player_y).canStepOn) player_x++;
+                else if (getBlock(world, player_x+1, player_y+1).canStepOn) {
+                    player_x++;
+                    player_y++;
+                }
             }
 
 
@@ -86,12 +110,50 @@ int main(int argc, char *argv[]) {
                 setBlock(world, player_x, player_y+1, initBlockById(air));
             }
 
-            else if (ch == 'k') { // place block on bottom
-                if (getBlock(world, player_x, player_y-1).canStepOn) setBlock(world, player_x, player_y-1, initBlockById(ore));
+            else if (ch == ',') { // place block on bottom
+                if (getBlock(world, player_x, player_y+1).canStepOn) {
+                    setBlock(world, player_x, player_y, initBlockById(ore));
+                    player_y++;
+                }
             }
-            else if (ch == 'K') { // break block on bottom
+            else if (ch == '<') { // break block on bottom
                 setBlock(world, player_x, player_y-1, initBlockById(air));
             }
+
+
+
+
+            // diagonal
+
+            else if (ch == 'm') { // place block on the bottom-left
+                if (getBlock(world, player_x-1, player_y-1).canStepOn) setBlock(world, player_x-1, player_y-1, initBlockById(ore));
+            }
+            else if (ch == 'M') { // break block on the bottom-left
+                setBlock(world, player_x-1, player_y-1, initBlockById(air));
+            }
+
+            else if (ch == '.') { // place block on the bottom-right
+                if (getBlock(world, player_x+1, player_y-1).canStepOn) setBlock(world, player_x+1, player_y-1, initBlockById(ore));
+            }
+            else if (ch == '>') { // break block on the bottom-right
+                setBlock(world, player_x+1, player_y-1, initBlockById(air));
+            }
+
+
+            else if (ch == 'u') { // place block on the top-left
+                if (getBlock(world, player_x-1, player_y+1).canStepOn) setBlock(world, player_x-1, player_y+1, initBlockById(ore));
+            }
+            else if (ch == 'U') { // break block on the top-left
+                setBlock(world, player_x-1, player_y+1, initBlockById(air));
+            }
+
+            else if (ch == 'o') { // place block on the top-right
+                if (getBlock(world, player_x+1, player_y+1).canStepOn) setBlock(world, player_x+1, player_y+1, initBlockById(ore));
+            }
+            else if (ch == 'O') { // break block on the top-right
+                setBlock(world, player_x+1, player_y+1, initBlockById(air));
+            }
+
 
             else if (ch == 't') generateTail = !generateTail;
         }
@@ -111,6 +173,13 @@ int main(int argc, char *argv[]) {
             }
         }
 
+        // physics
+        if (current_timestamp() - lastPhysicsUpdate >= 33) {
+            if (getBlock(world, player_x, player_y-1).canStepOn) player_y--;
+
+            lastPhysicsUpdate = current_timestamp();
+        }
+
         if (generateTail) {
             struct Block playerTail = {.id=custom, .sybmol='$', .color_pair=getColor(COLOR_YELLOW, COLOR_BLACK), .bold=false, .dim=false, .canStepOn=true};
             setBlock(world, player_x, player_y, playerTail);
@@ -121,6 +190,8 @@ int main(int argc, char *argv[]) {
         refresh();
 
         long long frameEnd = current_timestamp();
+
+        usleep(10000);
         /*
         long long toSleep = 16666 - (frameEnd - frameStart);
         if (toSleep > 0) {
