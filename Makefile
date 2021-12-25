@@ -14,3 +14,11 @@ $(TARGET) : $(OBJECTS)
 
 clean:
 	@rm -f $(TARGET) $(OBJECTS) core
+
+ifeq ($(PREFIX),)
+	PREFIX := /usr/local
+endif
+
+install:
+	install -d ${DESTDIR}${PREFIX}/bin
+	install -m 755 ncurses-minecraft $(DESTDIR)$(PREFIX)/bin/minecurses
