@@ -4,7 +4,7 @@ LDFLAGS= -lncurses -ltinfo
 
 SOURCES = src/*
 OBJECTS = $(SOURCES:.c=.0)
-TARGET = build/main
+TARGET = ncurses-minecraft
 
 $(TARGET) : $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
